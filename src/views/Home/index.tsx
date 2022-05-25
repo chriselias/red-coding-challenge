@@ -6,6 +6,7 @@ import Search from "components/Search";
 import DropdownSelect from "components/DropdownSelect";
 import Form from "components/Form";
 import Grid from "@material-ui/core/Grid";
+import { useGetOrders, useGetOrdersByCustomer } from "api/useOrders";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -30,6 +31,14 @@ export default function Home() {
     setCustomerType(value);
     console.log(value);
   };
+
+  const { data, status } = useGetOrders();
+  const { data: customerData, status: customerStatus } = useGetOrdersByCustomer(
+    "test",
+    "Standard"
+  );
+
+  console.log("🚀 ~ file: index.tsx ~ line 36 ~ Home ~ data", customerData);
 
   const onSelectOrderType = (value: any) => {
     setOrderType(value);
