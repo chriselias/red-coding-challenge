@@ -7,7 +7,7 @@ export default function Search() {
   const classes = useStyles();
   return (
     <div className={classes.container}>
-      <Input id="search" placeholder="Search" />
+      {/* <Input id="search" placeholder="Search" /> */}
       <IconButton
         type="submit"
         className={classes.iconButton}

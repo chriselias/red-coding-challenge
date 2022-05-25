@@ -1,11 +1,106 @@
+import { useState } from "react";
 import Input from "components/Input";
-import DropdownSelect from "components/DropdownSelect";
+import { Button } from "@material-ui/core";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Snackbar from "@material-ui/core/Snackbar";
+import InputLabel from "@material-ui/core/InputLabel";
+import { useNewOrder } from "api/useOrders";
+
+// TODO: export options to their own file
+const customerTypeOptions = [
+  { label: "All", value: "All" },
+  { label: "Customer", value: "Customer" },
+  { label: "Supplier", value: "Supplier" },
+];
+
+const orderTypeOptions = [
+  { label: "SaleOrder", value: "SaleOrder" },
+  { label: "Standard", value: "Standard" },
+];
+
+const defaultValues = {
+  createdByUserName: "",
+  customerName: "",
+  orderType: orderTypeOptions[0].value,
+};
 
 export default function Form() {
+  const [formValues, setFormValues] = useState(defaultValues);
+  const { mutate, isSuccess } = useNewOrder();
+  const handleInputChange = (event: any) => {
+    const { name, value } = event.target;
+    setFormValues({ ...formValues, [name as string]: value });
+  };
+
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+    console.log(formValues);
+    mutate(formValues);
+  };
+
   return (
-    <form>
-      <Input id="orderName" />
-      <Input id="customer" />
-    </form>
+    <>
+      <form onSubmit={handleSubmit}>
+        <Input
+          id="createdByUserName"
+          name="createdByUserName"
+          label="Created By"
+          value={formValues.createdByUserName}
+          onChange={handleInputChange}
+        />
+        <Input
+          id="customerName"
+          name="customerName"
+          label="Customer Name"
+          value={formValues.customerName}
+          onChange={handleInputChange}
+        />
+
+        <FormControl>
+          <Select
+            name="orderType"
+            value={formValues.orderType}
+            onChange={handleInputChange}
+          >
+            {orderTypeOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* <FormControl variant="outlined">
+        <InputLabel id="orderType">OrderType</InputLabel>
+        <Select
+          labelId="orderType"
+          id="orderType"
+          value={formValues.orderType}
+          onChange={handleInputChange}
+          label="Order Type"
+        >
+          {orderTypeOptions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl> */}
+
+        {/* <DropdownSelect
+        options={orderTypeOptions}
+        onSelectOption={handleInputChange}
+        value={formValues.orderType}
+      /> */}
+        <Button variant="contained" color="primary" type="submit">
+          Submit
+        </Button>
+      </form>
+      <Snackbar open={isSuccess} autoHideDuration={6000}>
+        <p>sucess</p>
+      </Snackbar>
+    </>
   );
 }

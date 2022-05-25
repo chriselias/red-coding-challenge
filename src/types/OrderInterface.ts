@@ -1,11 +1,11 @@
-enum OrderType {
-  Standard,
-  SaleOrder,
-}
+// enum OrderType {
+//   Standard,
+//   SaleOrder,
+// }
 
 export default interface Order {
   orderId: number;
-  orderType: OrderType;
+  orderType: "Standard" | "SaleOrder";
   customerName: string;
   createdDate: string;
   createdByUserName: string;

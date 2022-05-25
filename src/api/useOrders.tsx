@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import Order from "types/OrderInterface";
 
 const apiURL = process.env.REACT_APP_API_URL;
@@ -34,8 +34,11 @@ function useGetOrdersByCustomer(customerId: string, orderType: string) {
   );
 }
 
-const newOrder = async (order: Order) => {
-  let requestHeaders: any = { ApiKey: apiKey };
+const newOrder = async (order: any) => {
+  let requestHeaders: any = {
+    ApiKey: apiKey,
+    "Content-Type": "application/json",
+  };
   const response = await fetch(`${apiURL}/orders`, {
     method: "POST",
     headers: requestHeaders,
@@ -44,8 +47,13 @@ const newOrder = async (order: Order) => {
   return response.json();
 };
 
-function useNewOrder(order: Order) {
-  return useQuery("newOrder", () => newOrder(order));
+function useNewOrder() {
+  const queryClient = useQueryClient();
+  return useMutation("newOrder", newOrder, {
+    onSettled: () => {
+      queryClient.invalidateQueries("orders");
+    },
+  });
 }
 
 const deleteOrder = async (orderId: [number]) => {
