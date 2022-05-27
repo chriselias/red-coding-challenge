@@ -3,16 +3,8 @@ import Input from "components/Input";
 import { Button } from "@material-ui/core";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import Snackbar from "@material-ui/core/Snackbar";
 import { useNewOrder } from "api/useOrders";
 import Grid from "@material-ui/core/Grid";
-
-// TODO: export options to their own file
-const customerTypeOptions = [
-  { label: "All", value: "All" },
-  { label: "Customer", value: "Customer" },
-  { label: "Supplier", value: "Supplier" },
-];
 
 const orderTypeOptions = [
   { label: "SaleOrder", value: "SaleOrder" },
@@ -35,14 +27,15 @@ export default function Form() {
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    console.log(formValues);
     mutate(formValues);
+    setFormValues(defaultValues);
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <Grid container direction="row" alignItems="flex-start" spacing={4}>
+      <form onSubmit={handleSubmit} style={{ width: 300 }}>
+        {isSuccess && <h4>Order Added</h4>}
+        <Grid container direction="column" spacing={4}>
           <Grid item>
             <Input
               id="createdByUserName"
@@ -50,6 +43,7 @@ export default function Form() {
               label="Created By"
               value={formValues.createdByUserName}
               onChange={handleInputChange}
+              required={true}
             />
           </Grid>
           <Grid item>
@@ -59,6 +53,7 @@ export default function Form() {
               label="Customer Name"
               value={formValues.customerName}
               onChange={handleInputChange}
+              required={true}
             />
           </Grid>
           <Grid item>
@@ -74,40 +69,13 @@ export default function Form() {
               ))}
             </Select>
           </Grid>
-
-          {/* <FormControl variant="outlined">
-        <InputLabel id="orderType">OrderType</InputLabel>
-        <Select
-          labelId="orderType"
-          id="orderType"
-          value={formValues.orderType}
-          onChange={handleInputChange}
-          label="Order Type"
-        >
-          {orderTypeOptions.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl> */}
-
-          {/* <DropdownSelect
-        options={orderTypeOptions}
-        onSelectOption={handleInputChange}
-        value={formValues.orderType}
-      /> */}
           <Grid item>
-            <Button variant="contained" color="primary" type="submit">
-              Submit
+            <Button variant="contained" color="secondary" type="submit">
+              Create Order
             </Button>
           </Grid>
         </Grid>
       </form>
-
-      <Snackbar open={isSuccess} autoHideDuration={6000}>
-        <p>sucess</p>
-      </Snackbar>
     </>
   );
 }

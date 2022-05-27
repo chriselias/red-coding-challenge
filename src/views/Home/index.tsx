@@ -6,18 +6,13 @@ import Search from "components/Search";
 import DropdownSelect from "components/DropdownSelect";
 import Form from "components/Form";
 import Grid from "@material-ui/core/Grid";
-import { useGetOrders, useGetOrdersByCustomer } from "api/useOrders";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { useGetOrders } from "api/useOrders";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Backdrop from "@material-ui/core/Backdrop";
-import { CloseTwoTone } from "@material-ui/icons";
+import { CloseTwoTone, Add } from "@material-ui/icons";
 import { IconButton } from "@material-ui/core";
-const customerOptions = [
-  { label: "All", value: "All" },
-  { label: "Customer", value: "Customer" },
-  { label: "Supplier", value: "Supplier" },
-];
+import Order from "types/OrderInterface";
 
 const orderTypeOptions = [
   { label: "All", value: "All" },
@@ -34,7 +29,10 @@ export default function Home() {
   const classes = useStyles();
   const { data, isLoading } = useGetOrders();
   const [toggleForm, setToggleForm] = useState(false);
-  const [customer, setCustomer] = useState<SelectOption[]>();
+  const [customers, setCustomers] = useState<SelectOption[]>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState<SelectOption>(
+    customers[0]
+  );
   const [orderType, setOrderType] = useState(orderTypeOptions[0]);
   const [orders, setOrders] = useState(data);
   const [searchQuery, setSeachQuery] = useState("");
@@ -47,8 +45,11 @@ export default function Home() {
         value: order.customerName,
       };
     });
-    setCustomer(formated);
-    console.log(formated);
+    const uniqueCustomers: any[] = [
+      ...new Map(formated.map((v: any) => [v.value, v])).values(),
+    ];
+
+    setCustomers(uniqueCustomers);
   };
 
   useEffect(() => {
@@ -57,8 +58,16 @@ export default function Home() {
   }, [data]);
 
   const onSelectCustomerType = (value: any) => {
-    setCustomer(value);
-    console.log(value);
+    setSelectedCustomer(value);
+    const orginalData = data;
+    if (value === undefined) {
+      setOrders(orginalData);
+    } else {
+      const filteredRows = orginalData.filter(
+        (order: Order) => order.customerName === value.value
+      );
+      setOrders(filteredRows);
+    }
   };
 
   const onSearch = (event: any) => {
@@ -67,11 +76,10 @@ export default function Home() {
     setSeachQuery(value);
     const orginalData = data;
     if (value === "") {
-      console.log("og", orginalData);
       setOrders(orginalData);
     } else {
       const filteredRows = orginalData.filter(
-        (order: any) => order.orderId === Number(value)
+        (order: Order) => order.orderId === Number(value)
       );
       setOrders(filteredRows);
     }
@@ -82,7 +90,6 @@ export default function Home() {
     setOrderType(value);
     const orginalData = data;
     if (value.value === "All") {
-      console.log("og", orginalData);
       setOrders(orginalData);
     } else {
       const filteredRows = orginalData.filter(
@@ -92,14 +99,10 @@ export default function Home() {
     }
   };
 
-  if (isLoading) {
-    return <CircularProgress />;
-  }
-
   return (
     <Page headerTitle={"Home"}>
-      <Grid container spacing={2}>
-        <Grid item xs={6} sm={6}>
+      <Grid container spacing={2} style={{ paddingTop: 20, paddingBottom: 20 }}>
+        <Grid item xs={6} md={3}>
           <Search
             id="search"
             name="search"
@@ -108,55 +111,48 @@ export default function Home() {
             onChange={onSearch}
           />
         </Grid>
-        <Grid item xs={6} sm={3}>
+        <Grid item>
           <Button
             variant="contained"
-            color="primary"
-            fullWidth
+            color="secondary"
             onClick={() => setToggleForm(!toggleForm)}
+            startIcon={<Add />}
           >
             Create Order
           </Button>
         </Grid>
-
-        <Grid item xs={12} sm={3}>
+        <Grid item xs={12} md={3}>
+          <DropdownSelect
+            options={customers}
+            onSelectOption={onSelectCustomerType}
+            value={selectedCustomer}
+          />
+        </Grid>
+        <Grid item xs={12} md={3}>
           <DropdownSelect
             options={orderTypeOptions}
             onSelectOption={onSelectOrderType}
             value={orderType}
           />
         </Grid>
-        {/* <Grid item xs={12} sm={3}>
-          <DropdownSelect
-            options={customer}
-            onSelectOption={onSelectCustomerType}
-            value={customer[0]}
-          />
-        </Grid> */}
       </Grid>
-      {/* {toggleForm && (
-        <Paper>
-          <div className={classes.form}>
-            <h2>Create Order</h2>
-            <Form />
-          </div>
-        </Paper>
-      )} */}
       <Backdrop className={classes.backdrop} open={toggleForm}>
         <Paper>
           <div className={classes.form}>
-            <IconButton
-              aria-label="close"
-              onClick={() => setToggleForm(!toggleForm)}
-            >
-              <CloseTwoTone />
-            </IconButton>
+            <div className={classes.close}>
+              <IconButton
+                aria-label="close"
+                onClick={() => setToggleForm(!toggleForm)}
+                color="primary"
+              >
+                <CloseTwoTone />
+              </IconButton>
+            </div>
             <Form />
           </div>
         </Paper>
       </Backdrop>
-      {orders && <Table rows={orders} />}
-      {/* {orders && <Table2 data={orders} />} */}
+      {orders && <Table rows={orders} isLoading={isLoading} />}
     </Page>
   );
 }
@@ -169,5 +165,9 @@ const useStyles = makeStyles({
   backdrop: {
     zIndex: 1,
     color: "#fff",
+  },
+  close: {
+    display: "flex",
+    justifyContent: "flex-end",
   },
 });

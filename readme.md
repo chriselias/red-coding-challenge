@@ -1,0 +1,3 @@
+- custom theme
+- react query
+- example test for the table

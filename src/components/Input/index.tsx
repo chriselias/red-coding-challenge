@@ -1,5 +1,4 @@
 import TextField from "@material-ui/core/TextField";
-import InputBase from "@material-ui/core/InputBase";
 import Paper from "@material-ui/core/Paper";
 
 interface IProps {
@@ -8,11 +7,12 @@ interface IProps {
   name: string;
   label: string;
   value?: string;
+  required?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function Input(props: IProps) {
-  const { id, name, label, value, onChange } = props;
+  const { id, name, label, value, onChange, required } = props;
 
   return (
     <Paper variant="outlined">
@@ -26,6 +26,7 @@ export default function Input(props: IProps) {
         size="small"
         variant="outlined"
         fullWidth
+        required={required}
       />
     </Paper>
   );
