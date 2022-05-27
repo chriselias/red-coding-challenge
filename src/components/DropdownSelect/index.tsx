@@ -8,10 +8,10 @@ interface IProps {
   value: SelectOption | undefined;
 }
 
-export type SelectOption = {
+interface SelectOption {
   label: string;
-  value: any;
-};
+  value: string;
+}
 
 export default function DropdownSelect(props: IProps) {
   const { options, placeholder, onSelectOption, value } = props;

@@ -14,32 +14,32 @@ import { CloseTwoTone, Add } from "@material-ui/icons";
 import { IconButton } from "@material-ui/core";
 import Order from "types/OrderInterface";
 
+interface SelectType {
+  label: string;
+  value: string;
+}
+
 const orderTypeOptions = [
   { label: "All", value: "All" },
   { label: "Sale", value: "SaleOrder" },
   { label: "Standard", value: "Standard" },
 ];
 
-export type SelectOption = {
-  label: string;
-  value: any;
-};
-
 export default function Home() {
   const classes = useStyles();
   const { data, isLoading } = useGetOrders();
   const [toggleForm, setToggleForm] = useState(false);
-  const [customers, setCustomers] = useState<SelectOption[]>([]);
-  const [selectedCustomer, setSelectedCustomer] = useState<SelectOption>(
+  const [customers, setCustomers] = useState<SelectType[]>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState<SelectType>(
     customers[0]
   );
   const [orderType, setOrderType] = useState(orderTypeOptions[0]);
   const [orders, setOrders] = useState(data);
   const [searchQuery, setSeachQuery] = useState("");
 
-  const formatCustomers = (data: any) => {
+  const formatCustomers = (data: Order[]) => {
     if (!data) return;
-    const formated = data.map((order: any) => {
+    const formated = data.map((order: Order) => {
       return {
         label: order.customerName,
         value: order.customerName,
