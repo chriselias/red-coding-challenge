@@ -63,17 +63,15 @@ export default function Home() {
 
   const onSearch = (event: any) => {
     event.preventDefault();
-    const { name, value } = event.target;
+    const { value } = event.target;
     setSeachQuery(value);
-    console.log("searchQ", searchQuery);
-    console.log("value", value);
     const orginalData = data;
-    if (searchQuery === "") {
+    if (value === "") {
       console.log("og", orginalData);
       setOrders(orginalData);
     } else {
       const filteredRows = orginalData.filter(
-        (order: any) => order.orderId === Number(searchQuery)
+        (order: any) => order.orderId === Number(value)
       );
       setOrders(filteredRows);
     }
@@ -105,7 +103,7 @@ export default function Home() {
           <Search
             id="search"
             name="search"
-            label="Search"
+            label="Search by Order ID"
             value={searchQuery}
             onChange={onSearch}
           />
@@ -164,9 +162,6 @@ export default function Home() {
 }
 
 const useStyles = makeStyles({
-  filterContainer: {
-    // display: "flex",
-  },
   form: {
     margin: "20px 0",
     padding: "10px 20px 20px",
