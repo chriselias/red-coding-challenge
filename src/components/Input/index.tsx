@@ -23,8 +23,10 @@ export default function Input(props: IProps) {
         type="text"
         value={value}
         onChange={onChange}
+        size="small"
+        variant="outlined"
+        fullWidth
       />
-      {/* <InputBase placeholder={placeholder} /> */}
     </Paper>
   );
 }

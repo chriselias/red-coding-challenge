@@ -8,10 +8,11 @@ import Form from "components/Form";
 import Grid from "@material-ui/core/Grid";
 import { useGetOrders, useGetOrdersByCustomer } from "api/useOrders";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Order from "types/OrderInterface";
 import { makeStyles } from "@material-ui/core/styles";
-import Table2 from "components/Table2";
-
+import Paper from "@material-ui/core/Paper";
+import Backdrop from "@material-ui/core/Backdrop";
+import { CloseTwoTone } from "@material-ui/icons";
+import { IconButton } from "@material-ui/core";
 const customerOptions = [
   { label: "All", value: "All" },
   { label: "Customer", value: "Customer" },
@@ -32,8 +33,7 @@ export type SelectOption = {
 export default function Home() {
   const classes = useStyles();
   const { data, isLoading } = useGetOrders();
-  const { data: customerData } = useGetOrdersByCustomer("test", "Standard");
-
+  const [toggleForm, setToggleForm] = useState(false);
   const [customer, setCustomer] = useState<SelectOption[]>();
   const [orderType, setOrderType] = useState(orderTypeOptions[0]);
   const [orders, setOrders] = useState(data);
@@ -101,7 +101,7 @@ export default function Home() {
   return (
     <Page headerTitle={"Home"}>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={6} sm={6}>
           <Search
             id="search"
             name="search"
@@ -110,31 +110,55 @@ export default function Home() {
             onChange={onSearch}
           />
         </Grid>
-        <Grid item xs={6}>
-          <Button variant="contained" color="primary">
+        <Grid item xs={6} sm={3}>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={() => setToggleForm(!toggleForm)}
+          >
             Create Order
           </Button>
         </Grid>
-        <Grid item xs={12}>
-          {/* <DropdownSelect
-            options={customer}
-            onSelectOption={onSelectCustomerType}
-            value={customer[0]}
-          /> */}
-        </Grid>
-        <Grid item xs={12}>
+
+        <Grid item xs={12} sm={3}>
           <DropdownSelect
             options={orderTypeOptions}
             onSelectOption={onSelectOrderType}
             value={orderType}
           />
         </Grid>
+        {/* <Grid item xs={12} sm={3}>
+          <DropdownSelect
+            options={customer}
+            onSelectOption={onSelectCustomerType}
+            value={customer[0]}
+          />
+        </Grid> */}
       </Grid>
-      {/* <Table rows={orders} /> */}
-      {orders && <Table2 data={orders} />}
-      <div className={classes.form}>
-        <Form />
-      </div>
+      {/* {toggleForm && (
+        <Paper>
+          <div className={classes.form}>
+            <h2>Create Order</h2>
+            <Form />
+          </div>
+        </Paper>
+      )} */}
+      <Backdrop className={classes.backdrop} open={toggleForm}>
+        <Paper>
+          <div className={classes.form}>
+            <IconButton
+              aria-label="close"
+              onClick={() => setToggleForm(!toggleForm)}
+            >
+              <CloseTwoTone />
+            </IconButton>
+            <Form />
+          </div>
+        </Paper>
+      </Backdrop>
+      {orders && <Table rows={orders} />}
+      {/* {orders && <Table2 data={orders} />} */}
     </Page>
   );
 }
@@ -143,5 +167,12 @@ const useStyles = makeStyles({
   filterContainer: {
     // display: "flex",
   },
-  form: {},
+  form: {
+    margin: "20px 0",
+    padding: "10px 20px 20px",
+  },
+  backdrop: {
+    zIndex: 1,
+    color: "#fff",
+  },
 });
